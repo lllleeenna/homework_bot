@@ -4,7 +4,7 @@ class StatusCodeError(Exception):
     pass
 
 
-class StatusHomeworkError(Exception):
+class HomeworkStatusError(KeyError):
     """Исключение неизвестный статус домашней работы."""
 
     pass
