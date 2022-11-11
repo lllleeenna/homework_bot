@@ -58,6 +58,7 @@ def get_api_answer(current_timestamp):
             f'Статус ответа {ENDPOINT} не соответствует ожидаемому.'
             f' Код ответа API: {response.status_code}'
         )
+
     return response.json()
 
 
@@ -116,8 +117,10 @@ def main():
         sys.exit('Критическая ошибка. Отсутствуют переменные окружения.')
 
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    current_timestamp = int(time.time()) - 20 * 24 * 60 * 60
+    current_timestamp = int(time.time()) - 25 * 24 * 60 * 60
     prev_report = {'name': '', 'output': ''}
+    current_report = {'name': '', 'output': ''}
+    
     while True:
         try:
             response = get_api_answer(current_timestamp)
@@ -132,7 +135,7 @@ def main():
             else:
                 logger.debug('Новые статусы отсутствуют.')
 
-            current_timestamp = int(time.time()) - 20 * 24 * 60 * 60
+            current_timestamp = int(time.time()) - 25 * 24 * 60 * 60
 
         except telegram.error.TelegramError as error:
             logging.error(error)
