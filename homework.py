@@ -120,7 +120,7 @@ def main():
     current_timestamp = int(time.time()) - 25 * 24 * 60 * 60
     prev_report = {'name': '', 'output': ''}
     current_report = {'name': '', 'output': ''}
-    
+
     while True:
         try:
             response = get_api_answer(current_timestamp)
