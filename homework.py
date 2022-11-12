@@ -68,21 +68,37 @@ def check_response(response):
     домашних работ.
     """
     if not isinstance(response, dict):
-        raise TypeError('Ответ API не соответствует ожидаемому.')
+        raise TypeError(
+            'Тип ответа API не соответствует ожидаемому dict.'
+            f' Полученный ответ: {response}.'
+        )
 
     if not response:
-        raise ValueError('Словарь полученный от API пуст.')
+        raise ValueError(
+            'Словарь полученный от API пуст.'
+            f' Полученный ответ: {response}.'
+        )
 
     if 'homeworks' not in response:
-        raise HomeworkKeyError('Ответ API не содержит ключа "homeworks".')
+        raise HomeworkKeyError(
+            'Ответ API не содержит ключа "homeworks".'
+            f' Полученный ответ: {response}.'
+        )
 
     if 'current_date' not in response:
-        raise HomeworkKeyError('Ответ API не содержит ключа "current_date".')
+        raise HomeworkKeyError(
+            'Ответ API не содержит ключа "current_date".'
+            f' Полученный ответ: {response}.'
+        )
 
     list_homeworks = response.get('homeworks')
 
     if not isinstance(list_homeworks, list):
-        raise TypeError('Ответ API не соответствует ожидаемому.')
+        raise TypeError(
+            'Значение по ключу "homeworks"'
+            ' не соответствует ожидаемому list.'
+            f' Полученный ответ: {response}.'
+        )
 
     return list_homeworks
 
@@ -105,15 +121,20 @@ def parse_status(homework):
 
 def check_tokens():
     """Проверяет доступность переменных окружения."""
-    if not all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID]):
-        logger.critical('Отсутствует обязательная переменная окружения.')
-        return False
-    return True
+    if all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID]):
+        return True
+    return False
 
 
 def main():
     """Основная логика работы бота."""
     if not check_tokens():
+        logger.critical(
+            'Отсутствуют обязательные переменные окружения.'
+            f' PRACTICUM_TOKEN = {PRACTICUM_TOKEN};'
+            f' TELEGRAM_TOKEN = {TELEGRAM_TOKEN};'
+            f' TELEGRAM_CHAT_ID = {TELEGRAM_CHAT_ID}.'
+        )
         sys.exit('Критическая ошибка. Отсутствуют переменные окружения.')
 
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
@@ -132,6 +153,10 @@ def main():
                     'name': homework.get('homework_name'),
                     'output': parse_status(homework)
                 }
+                logging.info(
+                    'Подготовлено сообщение для отаравки:'
+                    f' {current_report["output"]}'
+                )
             else:
                 logger.debug('Новые статусы отсутствуют.')
 
@@ -146,6 +171,10 @@ def main():
                 'name': homework.get('homework_name'),
                 'output': f'Сбой в работе программы: {error}.'
             }
+            logging.info(
+                'Подготовлено сообщение для отаравки:'
+                f' {current_report["output"]}'
+            )
 
         finally:
             if prev_report != current_report:
